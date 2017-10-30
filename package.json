@@ -1,7 +1,7 @@
 {
-  "name": "syncdataiii",
+  "name": "projtwo",
   "version": "1.0.0",
-  "description": "Syncing data 3 homework",
+  "description": "Project 2 real-time",
   "main": "app.js",
   "scripts": {
     "build": "babel ./client --out-file ./hosted/compiled.js",
@@ -13,12 +13,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LegendaryBaddie/SyncDataIII.git"
+    "url": "git+https://github.com/LegendaryBaddie/project2.git"
   },
   "author": "Austin White",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/LegendaryBaddie/SyncDataIII/issues"
+    "url": "https://github.com/LegendaryBaddie/project2/issues"
   },
   "dependencies": {
     "express": "^4.15.2",
@@ -33,5 +33,5 @@
     "eslint-plugin-import": "^1.10.1",
     "nodemon": "^1.11.0"
   },
-  "homepage": "https://github.com/LegendaryBaddie/SyncDataIII#readme"
+  "homepage": "https://github.com/LegendaryBaddie/project2#readme"
 }
