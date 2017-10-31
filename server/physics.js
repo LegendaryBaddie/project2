@@ -17,6 +17,7 @@ const checkLineCollide = (x1, y1, x2, y2, x3, y3, x4, y4) => {
     const y = (A1 * C2 - A2 * C1) / det;
     return { x, y };
   }
+  return null;
 };
 
 const checkCollision = (data, x1, y1, x2, y2) => {
