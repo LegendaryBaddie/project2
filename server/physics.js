@@ -28,14 +28,14 @@ const checkCollision = (data, x1, y1, x2, y2) => {
   const circle = [ball.x, ball.y];
   if (collide(one, two, circle, ball.radius)) {
         // reflect
-    const vel = vec2D.ObjectVector(ball.velocity.x, ball.velocity.y);
+    const vel = new vec2D.ObjectVector(ball.velocity.x, ball.velocity.y);
 
 
-    const vec1 = vec2D.ObjectVector(ball.x + ball.velocity.x, ball.y + ball.velocity.y);
+    const vec1 = new vec2D.ObjectVector(ball.x + ball.velocity.x, ball.y + ball.velocity.y);
     const a = checkLineCollide(x1, y1, x2, y2, ball.x, ball.y, vec1.getX(), vec1.getY());
-    let vec2 = vec2D.ObjectVector(x2, y2);
-    vec2 = vec2.subtract(vec2D.ObjectVector(a.x, a.y));
-    vec1.subtract(vec2D.ObjectVector(ball.x, ball.y));
+    let vec2 = new vec2D.ObjectVector(x2, y2);
+    vec2 = vec2.subtract(new vec2D.ObjectVector(a.x, a.y));
+    vec1.subtract(new vec2D.ObjectVector(ball.x, ball.y));
     const angle = Math.acos((vec1.clone().dot(vec2)) / (vec1.magnitude() * (vec2.magnitude())));
     console.dir(vec1);
     console.dir(angle);
