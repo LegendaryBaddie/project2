@@ -5,16 +5,14 @@ let hash;
 let animationFrame;
 let ball = {};
 let paddles = {};
+let active = false;
 
-const start = () => {
-    ball.x = 400;
-    ball.y = 400;
-    ball.prevX = 400;
-    ball.prevY = 400;
-    ball.destX = 400;
-    ball.destY = 400;
-    ball.alpha = 0;
-}
+const keyDownHandler = (e) =>{
+
+};
+const keyUpHandler = (e) =>{
+    
+};
 
 const init = () => {
     canvas = document.querySelector('#canvas');
@@ -22,10 +20,10 @@ const init = () => {
   
     socket = io.connect();
     socket.on('joined', setUser);
-    socket.on('start', start);
+    socket.on('start', startD);
     socket.on('updatedMovement', update);
     socket.on('ballUpdate', updateB);
-
+  
     document.body.addEventListener('keydown', keyDownHandler);
     document.body.addEventListener('keyup', keyUpHandler);
   };
