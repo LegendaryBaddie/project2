@@ -4,14 +4,34 @@ let socket;
 let hash;
 let animationFrame;
 let ball = {};
-let paddles = {};
+let paddles;
 let active = false;
+let player = 0;
+
 
 const keyDownHandler = (e) =>{
-
+  var keyPressed = e.which;
+  const paddle = paddles[player];
+  if(keyPressed === 65 || keyPressed === 37) {
+    paddle.moveLeft = true;
+  }
+  // D OR RIGHT
+  else if(keyPressed === 68 || keyPressed === 39) {
+    paddle.moveRight = true;
+  }
+  updatePosition();
 };
 const keyUpHandler = (e) =>{
-    
+  var keyPressed = e.which;
+  const paddle = paddles[player];
+  if(keyPressed === 65 || keyPressed === 37) {
+    paddle.moveLeft = false;
+  }
+  // D OR RIGHT
+  else if(keyPressed === 68 || keyPressed === 39) {
+    paddle.moveRight = false;
+  }
+  updatePosition();
 };
 
 const init = () => {

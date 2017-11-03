@@ -1,16 +1,17 @@
 class Paddle {
-  constructor(hash) {
+  constructor(hash, player,x,y) {
     this.hash = hash;
     this.lastUpdate = new Date().getTime();
-    this.x = 0;
-    this.y = 0;
-    this.prevX = 0;
-    this.prevY = 0;
-    this.destX = 0;
-    this.destY = 0;
+    this.x = x;
+    this.y = y;
+    this.prevX = x;
+    this.prevY = y;
+    this.destX = x;
+    this.destY = y;
     this.lerp = 0;
     this.moveLeft = false;
     this.moveRight = false;
+    this.player = player;
   }
 }
 

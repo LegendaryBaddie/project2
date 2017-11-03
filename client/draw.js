@@ -1,5 +1,4 @@
 const redraw = (time) => {
-    //updatePositions();
     
     //redraw background
     ctx.clearRect(0,0,800,800);
@@ -22,8 +21,74 @@ const redraw = (time) => {
     ctx.closePath();
     ctx.stroke();
 
+    //lerp paddles
+    for(let i=0; i<paddles.length; i++){
+       if(paddles[i].lerp<1) paddles[i].lerp+=0.5;
+       paddles[i].x = lerp(paddles[i].prevX,paddles[i].destX,paddles[i].lerp);
+       paddles[i].y = lerp(paddles[i].prevY,paddles[i].destY,paddles[i].lerp);
+    }
     //draw paddles
+    //cant really itrate through
+    let x;
+    let y;
+    //#FFFF33 #FD1C03 #00FF33 #099FFF #FF00CC #9900FF
+    //p1
+    x=paddles[0].x;
+    y=paddles[0].y;
+    ctx.strokeStyle = "#FFFF33";
+    ctx.strokeRect(x-25,y-5,51,10);
 
+    //p2
+    x=paddles[1].x;
+    y=paddles[1].y;
+    ctx.strokeStyle = "#FD1C03";
+
+    ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(-0.447 - Math.PI/2);
+        ctx.strokeRect(-25,-5,51,10);
+    ctx.restore();
+    
+    //p3
+    x=paddles[2].x;
+    y=paddles[2].y;
+    ctx.strokeStyle = "#00FF33";
+
+    ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(.447+Math.PI/2);
+        ctx.strokeRect(-25,-5,51,10);
+    ctx.restore();
+
+    //p4
+    x=paddles[3].x;
+    y=paddles[3].y;
+    ctx.strokeStyle = "#099FFF";
+    ctx.strokeRect(x-25,y-5,51,10);
+
+    //p5
+    x=paddles[4].x;
+    y=paddles[4].y;
+    ctx.strokeStyle = "#FF00CC";
+
+    ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(-0.447 - Math.PI/2);
+        ctx.strokeRect(-25,-5,51,10);
+    ctx.restore();
+
+    //p6
+    x=paddles[5].x;
+    y=paddles[5].y;
+    ctx.strokeStyle = "#9900FF";
+
+    ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(.447+Math.PI/2);
+        ctx.strokeRect(-25,-5,51,10);
+    ctx.restore();
+
+    
     //lerp ball pos
     if(ball.lerp<1) ball.lerp += 0.05;
     ball.x = lerp(ball.prevX, ball.destX, ball.lerp);
@@ -43,16 +108,6 @@ const redraw = (time) => {
     animationFrame = requestAnimationFrame(redraw);
 };
 
-const updatePositions = () =>{
-    let paddle = paddles[hash];
-    paddle.prevX = paddle.x;
-    paddle.prevY = paddle.y;
-
-    //put movementcodeinHere
-
-    paddle.alpha = 0.05;
-    socket.emit('movementUpdate', paddle);
-}
 
 const lerp = (v0, v1, alpha) => {
     return (1 - alpha) * v0 + alpha * v1;

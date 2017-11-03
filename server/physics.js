@@ -37,8 +37,6 @@ const checkCollision = (data, x1, y1, x2, y2) => {
     vec2 = vec2.subtract(new vec2D.ObjectVector(a.x, a.y));
     vec1.subtract(new vec2D.ObjectVector(ball.x, ball.y));
     const angle = Math.acos((vec1.clone().dot(vec2)) / (vec1.magnitude() * (vec2.magnitude())));
-    console.dir(vec1);
-    console.dir(angle);
     vel.rotate(2 * angle);
     newData.ball.velocity.x = vel.x;
     newData.ball.velocity.y = vel.y;
@@ -59,6 +57,21 @@ const collision = (data) => {
     // prototype will just have a ball syncing bouncing around 6 walls
     // will eventually get rid of walls just have paddles and the this will eventually change
     // the line segments start and end
+    // paddle width is 51px so 25 px to left and right *on the line* is bounds of rect
+    // starting center of p1(BC) is (400,700)
+    // 375<x<425 y=700 ball pos +- 25 
+    // startinc cneter of p2(CD) is (175,550)
+    // left bound is x-12.5 y-12.5, right bound x+12.5 y+12.5  2.5 is offset for corner
+    // starting center of p3(DE) is (175,250)
+    // left bound is x-12.5 y+12.5, rightbound x+12.5, y-12.5
+    // starting cetner of p4(EF) is (400,100)
+    // 375<x<425 y=700; ball pos +-25
+    // starting center of p5(FA) is (625,250)
+    //left bound is x-12.5,y-12.5, right bound is x+12.5, y+12.5
+    // starting center of p6(AB) is (625,550)
+    // left bound is x+12.5, y-12.5, right bound x-12.5, y+12.5
+
+    //
    // AB
   checkCollision(data, 700, 400, 550, 700);
    // BC
@@ -81,7 +94,7 @@ const update = (data) => {
   updatedData.ball.y += updatedData.ball.velocity.y;
   updatedData.ball.destX = updatedData.ball.x;
   updatedData.ball.destY = updatedData.ball.y;
-
+  updatedData.ball.lerp = 0.05;
        // collision
   collision(updatedData);
 };
