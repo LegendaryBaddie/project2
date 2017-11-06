@@ -70,24 +70,58 @@ const collision = (data) => {
     //left bound is x-12.5,y-12.5, right bound is x+12.5, y+12.5
     // starting center of p6(AB) is (625,550)
     // left bound is x+12.5, y-12.5, right bound x-12.5, y+12.5
+  //paddle collision
 
-    //
-   // AB
-  checkCollision(data, 700, 400, 550, 700);
-   // BC
-  checkCollision(data, 550, 700, 250, 700);
-   // CD
-  checkCollision(data, 250, 700, 100, 400);
-   // DE
-  checkCollision(data, 100, 400, 250, 100);
-   // EF
-  checkCollision(data, 250, 100, 550, 100);
-   // FA
-  checkCollision(data, 550, 100, 700, 400);
+  // BC both are just simple lines
+  checkCollision(data, data.players[0].x +25, 695, data.players[0].x -25, 695);
+  // EF
+  checkCollision(data, data.players[3].x +25, 105, data.players[3].x -25, 105);
+  // EF
+  // v=(x1,y1)−(x0,y0). Normalize this to u=v||v||
+  // distance*u + original point
+  let u;
+  let modifiedXY
+
+  //v1 = (250,700)
+  //v2 = (100,400)
+  //v = (150,300)
+  //u = v/335.41
+
+  //CD
+  u = {x:0.447, y:0.894};
+
+  modifiedXY = {x:data.players[1].x, y: data.players[1].y};
+
+  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
+  
+  //FA
+  modifiedXY = {x:data.players[4].x, y: data.players[4].y};
+   
+  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
+  
+  //DE
+  u = {x:0.447, y:-0.894};
+  
+  modifiedXY = {x:data.players[2].x, y: data.players[2].y};
+  
+  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
+  
+  //AB
+
+  modifiedXY = {x:data.players[5].x, y: data.players[5].y};
+  
+  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
+    
+  //collsion with back wall zones that 
+ 
 };
 const update = (data) => {
        // update positions
   const updatedData = data;
+  if(updatedData.ball.x <0 || updatedData.ball.x >800 || updatedData.ball.y <0 || updatedData.ball.y>800){
+    updatedData.ball.x = 400;
+    updatedData.ball.y = 400;
+  }
   updatedData.ball.prevX = updatedData.ball.x;
   updatedData.ball.prevY = updatedData.ball.y;
   updatedData.ball.x += updatedData.ball.velocity.x;
@@ -95,6 +129,7 @@ const update = (data) => {
   updatedData.ball.destX = updatedData.ball.x;
   updatedData.ball.destY = updatedData.ball.y;
   updatedData.ball.lerp = 0.05;
+  
        // collision
   collision(updatedData);
 };
