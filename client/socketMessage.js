@@ -37,6 +37,10 @@ const updateB = (data) =>{
     ball.lerp = 0.05;
 }
 
+const death = (data) => {
+    paddles[data.player].alive = false;
+}
+
 const updatePosition = () => {
     const paddle = paddles[player];
     

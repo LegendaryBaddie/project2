@@ -7,8 +7,8 @@ class Ball {
     this.destX = startPos;
     this.destY = startPos;
     this.velocity = {
-      x: 3,
-      y: 5,
+      x: (Math.round(Math.random()) * 2 - 1)*3,
+      y: (Math.round(Math.random()) * 2 - 1)*3,
     };
     this.lerp = 0;
     this.radius = 5;

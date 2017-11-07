@@ -43,6 +43,7 @@ const init = () => {
     socket.on('start', startD);
     socket.on('updatedMovement', update);
     socket.on('ballUpdate', updateB);
+    socket.on('death', death);
   
     document.body.addEventListener('keydown', keyDownHandler);
     document.body.addEventListener('keyup', keyUpHandler);

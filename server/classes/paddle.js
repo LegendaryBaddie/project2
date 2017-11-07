@@ -12,6 +12,7 @@ class Paddle {
     this.moveLeft = false;
     this.moveRight = false;
     this.player = player;
+    this.alive = true;
   }
 }
 

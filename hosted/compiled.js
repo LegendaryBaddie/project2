@@ -23,6 +23,67 @@ var redraw = function redraw(time) {
     ctx.closePath();
     ctx.stroke();
 
+    //back zones;
+    ctx.globalAlpha = .3;
+    ctx.fillStyle = "#FFFF33";
+    ctx.beginPath();
+    ctx.moveTo(550, 700);
+    ctx.lineTo(575, 750);
+    ctx.lineTo(225, 750);
+    ctx.lineTo(250, 700);
+    ctx.closePath();
+    ctx.fill();
+
+    //cd
+    ctx.fillStyle = "#FD1C03";
+    ctx.beginPath();
+    ctx.moveTo(250, 700);
+    ctx.lineTo(225, 750);
+    ctx.lineTo(50, 400);
+    ctx.lineTo(100, 400);
+    ctx.closePath();
+    ctx.fill();
+
+    //DE
+    ctx.fillStyle = "#00FF33";
+    ctx.beginPath();
+    ctx.moveTo(100, 400);
+    ctx.lineTo(50, 400);
+    ctx.lineTo(225, 50);
+    ctx.lineTo(250, 100);
+    ctx.closePath();
+    ctx.fill();
+    //EF
+    ctx.fillStyle = "#099FFF";
+    ctx.beginPath();
+    ctx.moveTo(250, 100);
+    ctx.lineTo(225, 50);
+    ctx.lineTo(575, 50);
+    ctx.lineTo(550, 100);
+    ctx.closePath();
+    ctx.fill();
+
+    //FA
+    ctx.fillStyle = "#FF00CC";
+    ctx.beginPath();
+    ctx.moveTo(550, 100);
+    ctx.lineTo(575, 50);
+    ctx.lineTo(750, 400);
+    ctx.lineTo(700, 400);
+    ctx.closePath();
+    ctx.fill();
+
+    //AB
+    ctx.fillStyle = "#9900FF";
+    ctx.beginPath();
+    ctx.moveTo(700, 400);
+    ctx.lineTo(750, 400);
+    ctx.lineTo(575, 750);
+    ctx.lineTo(550, 700);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.globalAlpha = 1;
     //lerp paddles
     for (var i = 0; i < paddles.length; i++) {
         if (paddles[i].lerp < 1) paddles[i].lerp += 0.5;
@@ -35,60 +96,71 @@ var redraw = function redraw(time) {
     var y = void 0;
     //#FFFF33 #FD1C03 #00FF33 #099FFF #FF00CC #9900FF
     //p1
-    x = paddles[0].x;
-    y = paddles[0].y;
-    ctx.strokeStyle = "#FFFF33";
-    ctx.strokeRect(x - 25, y - 5, 51, 10);
+    if (paddles[0].alive) {
+        x = paddles[0].x;
+        y = paddles[0].y;
+        ctx.strokeStyle = "#FFFF33";
+        ctx.strokeRect(x - 25, y - 5, 51, 10);
+    }
 
     //p2
-    x = paddles[1].x;
-    y = paddles[1].y;
-    ctx.strokeStyle = "#FD1C03";
+    if (paddles[1].alive) {
+        x = paddles[1].x;
+        y = paddles[1].y;
+        ctx.strokeStyle = "#FD1C03";
 
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(-0.447 - Math.PI / 2);
-    ctx.strokeRect(-25, -5, 51, 10);
-    ctx.restore();
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(-0.447 - Math.PI / 2);
+        ctx.strokeRect(-25, -5, 51, 10);
+        ctx.restore();
+    }
 
     //p3
-    x = paddles[2].x;
-    y = paddles[2].y;
-    ctx.strokeStyle = "#00FF33";
+    if (paddles[2].alive) {
+        x = paddles[2].x;
+        y = paddles[2].y;
+        ctx.strokeStyle = "#00FF33";
 
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(.447 + Math.PI / 2);
-    ctx.strokeRect(-25, -5, 51, 10);
-    ctx.restore();
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(.447 + Math.PI / 2);
+        ctx.strokeRect(-25, -5, 51, 10);
+        ctx.restore();
+    }
 
     //p4
-    x = paddles[3].x;
-    y = paddles[3].y;
-    ctx.strokeStyle = "#099FFF";
-    ctx.strokeRect(x - 25, y - 5, 51, 10);
+    if (paddles[3].alive) {
+        x = paddles[3].x;
+        y = paddles[3].y;
+        ctx.strokeStyle = "#099FFF";
+        ctx.strokeRect(x - 25, y - 5, 51, 10);
+    }
 
     //p5
-    x = paddles[4].x;
-    y = paddles[4].y;
-    ctx.strokeStyle = "#FF00CC";
+    if (paddles[4].alive) {
+        x = paddles[4].x;
+        y = paddles[4].y;
+        ctx.strokeStyle = "#FF00CC";
 
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(-0.447 - Math.PI / 2);
-    ctx.strokeRect(-25, -5, 51, 10);
-    ctx.restore();
-
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(-0.447 - Math.PI / 2);
+        ctx.strokeRect(-25, -5, 51, 10);
+        ctx.restore();
+    }
     //p6
-    x = paddles[5].x;
-    y = paddles[5].y;
-    ctx.strokeStyle = "#9900FF";
+    if (paddles[5].alive) {
+        x = paddles[5].x;
+        y = paddles[5].y;
+        ctx.strokeStyle = "#9900FF";
 
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(.447 + Math.PI / 2);
-    ctx.strokeRect(-25, -5, 51, 10);
-    ctx.restore();
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(.447 + Math.PI / 2);
+        ctx.strokeRect(-25, -5, 51, 10);
+        ctx.restore();
+    }
 
     //lerp ball pos
     if (ball.lerp < 1) ball.lerp += 0.05;
@@ -158,6 +230,7 @@ var init = function init() {
   socket.on('start', startD);
   socket.on('updatedMovement', update);
   socket.on('ballUpdate', updateB);
+  socket.on('death', death);
 
   document.body.addEventListener('keydown', keyDownHandler);
   document.body.addEventListener('keyup', keyUpHandler);
@@ -204,6 +277,10 @@ var updateB = function updateB(data) {
     ball.destX = data.destX;
     ball.destY = data.destY;
     ball.lerp = 0.05;
+};
+
+var death = function death(data) {
+    paddles[data.player].alive = false;
 };
 
 var updatePosition = function updatePosition() {
