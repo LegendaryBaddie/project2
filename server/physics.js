@@ -8,32 +8,34 @@ const Ball = require('./classes/ball.js');
 let room = {};
 let canStart = false;
 
-const checkLineCollide = (x1, y1, x2, y2, x3, y3, x4, y4) => {
-  const A1 = y2 - y1;
-  const B1 = x1 - x2;
-  const C1 = A1 * x1 + B1 * y1;
-  const A2 = y4 - y3;
-  const B2 = x3 - x4;
-  const C2 = A2 * x3 + B2 * y3;
-  const det = A1 * B2 - A2 * B1;
-  if (det !== 0) {
-    const x = (B2 * C1 - B1 * C2) / det;
-    const y = (A1 * C2 - A2 * C1) / det;
-    return { x, y };
-  }
-  return null;
+const resetBall = () => {
+  room.ball = new Ball(400, room.ball.speed + 1);
 };
-const resetBall = () =>{
-  room.ball = new Ball(400);
-};
-const checkCollision = (data, x1, y1, x2, y2) => {
-  const ball = data.ball;
-  const newData = data;
+const checkCollision = (x1, y1, x2, y2) => {
+  const ball = room.ball;
   const one = [x1, y1];
   const two = [x2, y2];
   const circle = [ball.x, ball.y];
-  if (collide(one, two, circle, ball.radius)) {
+  const nearest = [0, 0];
+  if (collide(one, two, circle, ball.radius, nearest)) {
         // reflect
+        // horizontal wall
+    if (y1 === y2) {
+      room.ball.velocity.y *= -1;
+      return;
+    }
+
+    const v1 = new vec2D.ObjectVector(ball.velocity.x, ball.velocity.y);
+
+    const normal = new vec2D.ObjectVector(y2 - y1, -1 * (x2 - x1));
+    normal.normalize();
+
+
+    const step1 = v1.clone().dot(normal.clone()) * 2;
+
+    const outV = v1.clone().subtract(normal.clone().mulS(step1));
+
+    /*
     const vel = new vec2D.ObjectVector(ball.velocity.x, ball.velocity.y);
 
 
@@ -44,35 +46,13 @@ const checkCollision = (data, x1, y1, x2, y2) => {
     vec1.subtract(new vec2D.ObjectVector(ball.x, ball.y));
     const angle = Math.acos((vec1.clone().dot(vec2)) / (vec1.magnitude() * (vec2.magnitude())));
     vel.rotate(2 * angle);
-    newData.ball.velocity.x = vel.x;
-    newData.ball.velocity.y = vel.y;
-    //move ball in towards center so it doesn't break through things
-    //top right quadrant
-    if(newData.ball.x>550 && newData.ball.y<400){
-        newData.ball.x -= 3;
-        newData.ball.y += 3;
-     }
-     //bottom right
-    if(newData.ball.x>550 && newData.ball.y>400){
-      newData.ball.x -= 3;
-      newData.ball.y -= 3;
-    }
-    //bottom left
-    if(newData.ball.x<250 && newData.ball.y>400){
-      newData.ball.x += 3;
-      newData.ball.y -= 3;
-    }
-    //top left
-    if(newData.ball.x<250 && newData.ball.y<400){
-      newData.ball.x += 3;
-      newData.ball.y += 3;
-    }
-    
-  }
-  room = newData;
-};
-const checkBackWall = (data) => {
+    */
 
+    room.ball.velocity.x = outV.getX();
+    room.ball.velocity.y = outV.getY();
+  }
+};
+const checkBackWall = () => {
    // hexagon of radius 350
     // centered at 0,0 has points at
     //
@@ -81,94 +61,79 @@ const checkBackWall = (data) => {
     //  (50,400) D /        \ A (750,400)
     //             \        /
     //   (225,750)C \______/ B (575,750)
-  let one,two;
-  let circle = [data.ball.x,data.ball.y]
- 
-  //ab
-  if(data.ball.x>550 && data.ball.y>400)
-  {
-    one = [750,400];
-    two = [575,750];
-    if (collide(one, two, circle, data.ball.radius))
-    {
-      //kill player 5
+  let one;
+  let two;
+  const circle = [room.ball.x, room.ball.y];
+
+  // ab
+  if (room.ball.x > 550 && room.ball.y > 400) {
+    one = [750, 400];
+    two = [575, 750];
+    if (collide(one, two, circle, room.ball.radius)) {
+      // kill player 5
       room.players[5].alive = false;
-      console.log("player 5 died");
       process.send(new Message('death', room.players[5]));
       resetBall();
     }
   }
-  //bc
-  if(data.ball.y>700)
-  {
-    one = [575,750];
-    two = [225,750];
-    if (collide(one, two, circle, data.ball.radius))
-    {
-      //kill player 0
+  // bc
+  if (room.ball.y > 700) {
+    one = [575, 750];
+    two = [225, 750];
+    if (collide(one, two, circle, room.ball.radius)) {
+      // kill player 0
       room.players[0].alive = false;
-      console.log("player 0 died");
       process.send(new Message('death', room.players[0]));
       resetBall();
     }
   }
-  //cd
-  if(data.ball.x<250 && data.ball.y>400 )
-  {
-    one = [225,750];
-    two = [50,400];
-    if (collide(one, two, circle, data.ball.radius))
-    {
-      //kill player 1
+  // cd
+  if (room.ball.x < 250 && room.ball.y > 400) {
+    one = [225, 750];
+    two = [50, 400];
+    if (collide(one, two, circle, room.ball.radius)) {
+      // kill player 1
       room.players[1].alive = false;
-      console.log("player 1 died");
       process.send(new Message('death', room.players[1]));
       resetBall();
     }
   }
-  //DE
-  if(data.ball.x<250 && data.ball.y<400)
-  {
-    one = [50,400];
-    two = [225,50];
-    if (collide(one, two, circle, data.ball.radius))
-    {
-      //kill player 2
+  // DE
+  if (room.ball.x < 250 && room.ball.y < 400) {
+    one = [50, 400];
+    two = [225, 50];
+    if (collide(one, two, circle, room.ball.radius)) {
+      // kill player 2
       room.players[2].alive = false;
-      console.log("player 2 died");
       process.send(new Message('death', room.players[2]));
       resetBall();
     }
   }
-  //EF
-  if(data.ball.y<100 && data.ball.x<575){
-    one = [225,50];
-    two = [575,50];
-    if (collide(one, two, circle, data.ball.radius))
-    {
-      //kill player 3
+  // EF
+  if (room.ball.y < 100 && room.ball.x < 575) {
+    one = [225, 50];
+    two = [575, 50];
+    if (collide(one, two, circle, room.ball.radius)) {
+      // kill player 3
       room.players[3].alive = false;
-      console.log("player 3 died");
       process.send(new Message('death', room.players[3]));
       resetBall();
     }
   }
-  //FA
-  if(data.ball.x>550 && data.ball.y <400){
-    one = [575,50];
-    two = [750,400];
-    if (collide(one, two, circle, data.ball.radius))
-    {
-      //kill player 4
+  // FA
+  if (room.ball.x > 550 && room.ball.y < 400) {
+    one = [575, 50];
+    two = [750, 400];
+    if (collide(one, two, circle, room.ball.radius)) {
+      // kill player 4
       room.players[4].alive = false;
-      console.log("player 4 died");
       process.send(new Message('death', room.players[4]));
       resetBall();
     }
   }
-}
-const collision = (data) => {
-    // data should be a single room obj
+};
+const collision = () => {
+    // room should be a single room obj
     // check and respond if the ball is colliding with walls
     // hexagon of radius 300
     // centered at 0,0 has points at
@@ -183,7 +148,7 @@ const collision = (data) => {
     // the line segments start and end
     // paddle width is 51px so 25 px to left and right *on the line* is bounds of rect
     // starting center of p1(BC) is (400,700)
-    // 375<x<425 y=700 ball pos +- 25 
+    // 375<x<425 y=700 ball pos +- 25
     // startinc cneter of p2(CD) is (175,550)
     // left bound is x-12.5 y-12.5, right bound x+12.5 y+12.5  2.5 is offset for corner
     // starting center of p3(DE) is (175,250)
@@ -191,94 +156,108 @@ const collision = (data) => {
     // starting cetner of p4(EF) is (400,100)
     // 375<x<425 y=700; ball pos +-25
     // starting center of p5(FA) is (625,250)
-    //left bound is x-12.5,y-12.5, right bound is x+12.5, y+12.5
+    // left bound is x-12.5,y-12.5, right bound is x+12.5, y+12.5
     // starting center of p6(AB) is (625,550)
     // left bound is x+12.5, y-12.5, right bound x-12.5, y+12.5
-  //paddle collision
+  // paddle collision
 
   // BC both are just simple lines
-  if(room.players[0].alive){
-  checkCollision(data, data.players[0].x +25, 695, data.players[0].x -25, 695);
-  }else{
-  checkCollision(data, 550,700,250,700);
+  if (room.players[0].alive) {
+    checkCollision(room.players[0].x + 25, 695, room.players[0].x - 25, 695);
+  } else {
+    checkCollision(550, 700, 250, 700);
   }
   // EF
-  if(room.players[3].alive){
-  checkCollision(data, data.players[3].x +25, 105, data.players[3].x -25, 105);
-  }else{
-  checkCollision(data, 250,100,550,100);
+  if (room.players[3].alive) {
+  // console.dir(room.players[3].x);
+    checkCollision(room.players[3].x + 25, 105, room.players[3].x - 25, 105);
+  } else {
+    checkCollision(250, 100, 550, 100);
   }
   // EF
   // v=(x1,y1)−(x0,y0). Normalize this to u=v||v||
   // distance*u + original point
   let u;
-  let modifiedXY
+  let modifiedXY;
 
-  //v1 = (250,700)
-  //v2 = (100,400)
-  //v = (150,300)
-  //u = v/335.41
+  // v1 = (250,700)
+  // v2 = (100,400)
+  // v = (150,300)
+  // u = v/335.41
 
-  //CD
-  u = {x:0.447, y:0.894};
-  if(room.players[1].alive){
-    //if player is alive use their paddle 
-  modifiedXY = {x:data.players[1].x, y: data.players[1].y};
-  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
-  }else{
-    //otherwise use the line their paddle is on
-  checkCollision(data, 250,700,100,400)
+  // CD
+  u = { x: 0.447, y: 0.894 };
+  if (room.players[1].alive) {
+    // if player is alive use their paddle
+    modifiedXY = { x: room.players[1].x, y: room.players[1].y };
+    checkCollision(modifiedXY.x + u.x * 25,
+                   modifiedXY.y + u.y * 25,
+                   modifiedXY.x - u.x * 25,
+                   modifiedXY.y - u.y * 25);
+  } else {
+    // otherwise use the line their paddle is on
+    checkCollision(250, 700, 100, 400);
   }
-  
-  //FA
-  if(room.players[4].alive){
-  modifiedXY = {x:data.players[4].x, y: data.players[4].y}; 
-  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
-  }else{
-  checkCollision(data, 550,100,700,400);
+
+  // FA
+  if (room.players[4].alive) {
+    modifiedXY = { x: room.players[4].x, y: room.players[4].y };
+    checkCollision(modifiedXY.x + u.x * 25,
+                   modifiedXY.y + u.y * 25,
+                   modifiedXY.x - u.x * 25,
+                   modifiedXY.y - u.y * 25);
+  } else {
+    checkCollision(550, 100, 700, 400);
   }
-  //DE
-  u = {x:0.447, y:-0.894};
-  if(room.players[2].alive){
-  modifiedXY = {x:data.players[2].x, y: data.players[2].y};
-  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
-  }else{
-  checkCollision(data,100,400,250,100);
+  // DE
+  u = { x: 0.447, y: -0.894 };
+  if (room.players[2].alive) {
+    modifiedXY = { x: room.players[2].x, y: room.players[2].y };
+    checkCollision(modifiedXY.x + u.x * 25,
+                   modifiedXY.y + u.y * 25,
+                   modifiedXY.x - u.x * 25,
+                   modifiedXY.y - u.y * 25);
+  } else {
+    checkCollision(100, 400, 250, 100);
   }
-  //AB
-  if(room.players[5].alive){
-  modifiedXY = {x:data.players[5].x, y: data.players[5].y}; 
-  checkCollision(data, modifiedXY.x + u.x*25, modifiedXY.y + u.y*25, modifiedXY.x - u.x*25, modifiedXY.y - u.y*25);
-  }else{
-  checkCollision(data,700,400,550,700);
+  // AB
+  if (room.players[5].alive) {
+    modifiedXY = { x: room.players[5].x, y: room.players[5].y };
+    checkCollision(modifiedXY.x + u.x * 25,
+                   modifiedXY.y + u.y * 25,
+                   modifiedXY.x - u.x * 25,
+                   modifiedXY.y - u.y * 25);
+  } else {
+    checkCollision(700, 400, 550, 700);
   }
-  //collsion with back wall zones that 
+  // collsion with back wall zones that
   // check for collision on bottom right so AB and BC
-  checkBackWall(data);
+  checkBackWall();
+  room.ball.lerp = 0.05;
   process.send(new Message('ball', room));
 };
 const update = () => {
        // update positions
-  const updatedData = room;
 
-  updatedData.ball.prevX = updatedData.ball.x;
-  updatedData.ball.prevY = updatedData.ball.y;
-  updatedData.ball.x += updatedData.ball.velocity.x;
-  updatedData.ball.y += updatedData.ball.velocity.y;
-  updatedData.ball.destX = updatedData.ball.x;
-  updatedData.ball.destY = updatedData.ball.y;
-  updatedData.ball.lerp = 0.05;
-  
+
+  room.ball.prevX = room.ball.x;
+  room.ball.prevY = room.ball.y;
+  room.ball.x += room.ball.velocity.x * room.ball.speed;
+  room.ball.y += room.ball.velocity.y * room.ball.speed;
+  room.ball.destX = room.ball.x;
+  room.ball.destY = room.ball.y;
+  room.ball.lerp = 0.05;
+
        // collision
-  collision(updatedData);
+  collision();
 };
 
 
 setInterval(() => {
-    if(canStart){
+  if (canStart) {
     update();
-    }
-}, 20);
+  }
+}, 30);
 
 process.on('message', (messageObject) => {
   switch (messageObject.type) {
@@ -288,7 +267,7 @@ process.on('message', (messageObject) => {
       break;
     }
     case 'paddle' : {
-      room[messageObject.data.player] = messageObject.data;
+      room.players[messageObject.data.player] = messageObject.data;
       break;
     }
     default: {

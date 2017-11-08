@@ -10,7 +10,12 @@ var redraw = function redraw(time) {
     //draw zones gonna have to check which paddles own what zones
     //save color in paddle data struc
     //assign colors via order arrived in serverroom
-
+    if (win) {
+        ctx.strokeStyle = "#FFF";
+        ctx.font = "normal normal 600 100px Exo";
+        ctx.strokeText('You Win!', 150, 400);
+        return;
+    }
     //draw hexagon
     ctx.strokeStyle = "#AAAAAA";
     ctx.beginPath();
@@ -83,10 +88,62 @@ var redraw = function redraw(time) {
     ctx.closePath();
     ctx.fill();
 
+    //let the player know what color they are
+    switch (player) {
+        case 0:
+            {
+                ctx.strokeStyle = "#FFFF33";
+                ctx.font = "normal normal 600 40px Exo";
+                ctx.strokeText('You are Yellow', 300, 400);
+                break;
+            }
+        case 1:
+            {
+                ctx.strokeStyle = "#FD1C03";
+                ctx.font = "normal normal 600 40px Exo";
+                ctx.strokeText('You are Red', 300, 400);
+                break;
+            }
+        case 2:
+            {
+                ctx.strokeStyle = "#00FF33";
+                ctx.font = "normal normal 600 40px Exo";
+                ctx.strokeText('You are Green', 300, 400);
+                break;
+            }
+        case 3:
+            {
+                ctx.strokeStyle = "#099FFF";
+                ctx.font = "normal normal 600 40px Exo";
+                ctx.strokeText('You are Blue', 300, 400);
+                break;
+            }
+        case 4:
+            {
+                ctx.strokeStyle = "#FF00CC";
+                ctx.font = "normal normal 600 40px Exo";
+                ctx.strokeText('You are Pink', 300, 400);
+                break;
+            }
+        case 5:
+            {
+                ctx.strokeStyle = "#9900FF";
+                ctx.font = "normal normal 600 40px Exo";
+                ctx.strokeText('You are Purple', 300, 400);
+                break;
+            }
+    }
+
+    if (newestDead !== '') {
+        ctx.globalAlpha = .7;
+        ctx.strokeStyle = "#FFF";
+        ctx.font = "normal normal 600 40px Exo";
+        ctx.strokeText(newestDead + " died!", 300, 600);
+    }
     ctx.globalAlpha = 1;
     //lerp paddles
     for (var i = 0; i < paddles.length; i++) {
-        if (paddles[i].lerp < 1) paddles[i].lerp += 0.5;
+        if (paddles[i].lerp < 1) paddles[i].lerp += 0.05;
         paddles[i].x = lerp(paddles[i].prevX, paddles[i].destX, paddles[i].lerp);
         paddles[i].y = lerp(paddles[i].prevY, paddles[i].destY, paddles[i].lerp);
     }
@@ -163,7 +220,7 @@ var redraw = function redraw(time) {
     }
 
     //lerp ball pos
-    if (ball.lerp < 1) ball.lerp += 0.05;
+    if (ball.lerp < 1) ball.lerp += 0.35;
     ball.x = lerp(ball.prevX, ball.destX, ball.lerp);
     ball.y = lerp(ball.prevY, ball.destY, ball.lerp);
     ball.prevX = ball.x;
@@ -195,6 +252,8 @@ var ball = {};
 var paddles = void 0;
 var active = false;
 var player = 0;
+var newestDead = '';
+var win = false;
 
 var keyDownHandler = function keyDownHandler(e) {
   var keyPressed = e.which;
@@ -206,6 +265,7 @@ var keyDownHandler = function keyDownHandler(e) {
   else if (keyPressed === 68 || keyPressed === 39) {
       paddle.moveRight = true;
     }
+
   updatePosition();
 };
 var keyUpHandler = function keyUpHandler(e) {
@@ -218,13 +278,21 @@ var keyUpHandler = function keyUpHandler(e) {
   else if (keyPressed === 68 || keyPressed === 39) {
       paddle.moveRight = false;
     }
+
   updatePosition();
 };
 
 var init = function init() {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
-
+  ctx.save();
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, 800, 800);
+  ctx.strokeStyle = "#FFF";
+  ctx.lineWidth = 2;
+  ctx.font = "normal normal 600 60px Exo";
+  ctx.strokeText('Waiting for more players!', 50, 400);
+  ctx.restore();
   socket = io.connect();
   socket.on('joined', setUser);
   socket.on('start', startD);
@@ -258,6 +326,8 @@ var startD = function startD(data) {
     //draw ball
     ball = data.ball;
     //let people move
+    win = false;
+    newestDead = '';
     active = true;
     requestAnimationFrame(redraw);
 };
@@ -281,6 +351,23 @@ var updateB = function updateB(data) {
 
 var death = function death(data) {
     paddles[data.player].alive = false;
+    var deadCount = 0;
+    for (var i = 0; i < paddles.length; i++) {
+        if (paddles[i].alive === false) {
+            deadCount++;
+        }
+    }
+    if (deadCount >= 5 && paddles[player].alive) {
+        win = true;
+        socket.emit('killRoom');
+    } else {
+        if (paddles[data.player].hash === hash) {
+            active = false;
+            newestDead = "You";
+        } else {
+            newestDead = 'Player ' + (data.player + 1);
+        }
+    }
 };
 
 var updatePosition = function updatePosition() {
@@ -362,6 +449,6 @@ var updatePosition = function updatePosition() {
             break;
     }
 
-    paddle.alpha = 0.05;
+    paddle.lerp = 0.35;
     socket.emit('movementUpdate', paddle);
 };

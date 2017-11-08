@@ -7,6 +7,8 @@ let ball = {};
 let paddles;
 let active = false;
 let player = 0;
+let newestDead = '';
+let win = false;
 
 
 const keyDownHandler = (e) =>{
@@ -19,7 +21,9 @@ const keyDownHandler = (e) =>{
   else if(keyPressed === 68 || keyPressed === 39) {
     paddle.moveRight = true;
   }
+  
   updatePosition();
+  
 };
 const keyUpHandler = (e) =>{
   var keyPressed = e.which;
@@ -31,13 +35,22 @@ const keyUpHandler = (e) =>{
   else if(keyPressed === 68 || keyPressed === 39) {
     paddle.moveRight = false;
   }
+  
   updatePosition();
+  
 };
 
 const init = () => {
     canvas = document.querySelector('#canvas');
     ctx = canvas.getContext('2d');
-  
+    ctx.save();
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0,0,800,800);
+      ctx.strokeStyle = "#FFF";
+      ctx.lineWidth = 2;
+      ctx.font = "normal normal 600 60px Exo";
+      ctx.strokeText('Waiting for more players!', 50,400);
+    ctx.restore();
     socket = io.connect();
     socket.on('joined', setUser);
     socket.on('start', startD);

@@ -8,7 +8,12 @@ const redraw = (time) => {
     //draw zones gonna have to check which paddles own what zones
     //save color in paddle data struc
     //assign colors via order arrived in serverroom
-
+    if(win){
+        ctx.strokeStyle="#FFF";
+        ctx.font = "normal normal 600 100px Exo";
+        ctx.strokeText('You Win!',150,400);
+        return;
+    }
     //draw hexagon
     ctx.strokeStyle = "#AAAAAA";
     ctx.beginPath();
@@ -80,11 +85,57 @@ const redraw = (time) => {
      ctx.lineTo(550,700);
      ctx.closePath();
      ctx.fill();
+     
+     //let the player know what color they are
+    switch(player){
+        case 0:{
+            ctx.strokeStyle="#FFFF33";
+            ctx.font = "normal normal 600 40px Exo";
+            ctx.strokeText('You are Yellow',300,400);
+            break;
+        }
+        case 1:{
+            ctx.strokeStyle="#FD1C03";
+            ctx.font = "normal normal 600 40px Exo";
+            ctx.strokeText('You are Red',300,400);
+            break;
+        }
+        case 2:{
+            ctx.strokeStyle="#00FF33";
+            ctx.font = "normal normal 600 40px Exo";
+            ctx.strokeText('You are Green',300,400);
+            break;
+        }
+        case 3:{
+            ctx.strokeStyle="#099FFF";
+            ctx.font = "normal normal 600 40px Exo";
+            ctx.strokeText('You are Blue',300,400);
+            break;
+        }
+        case 4:{
+            ctx.strokeStyle="#FF00CC";
+            ctx.font = "normal normal 600 40px Exo";
+            ctx.strokeText('You are Pink',300,400);
+            break;
+        }
+        case 5:{
+            ctx.strokeStyle="#9900FF";
+            ctx.font = "normal normal 600 40px Exo";
+            ctx.strokeText('You are Purple',300,400);
+            break;
+        }
+    }
 
+    if(newestDead !== ''){
+        ctx.globalAlpha = .7;
+        ctx.strokeStyle="#FFF";
+        ctx.font = "normal normal 600 40px Exo";
+        ctx.strokeText(`${newestDead} died!`,300,600);
+    }
     ctx.globalAlpha = 1;
     //lerp paddles
     for(let i=0; i<paddles.length; i++){
-       if(paddles[i].lerp<1) paddles[i].lerp+=0.5;
+       if(paddles[i].lerp<1) paddles[i].lerp+=0.05;
        paddles[i].x = lerp(paddles[i].prevX,paddles[i].destX,paddles[i].lerp);
        paddles[i].y = lerp(paddles[i].prevY,paddles[i].destY,paddles[i].lerp);
     }
@@ -161,7 +212,7 @@ const redraw = (time) => {
     }
     
     //lerp ball pos
-    if(ball.lerp<1) ball.lerp += 0.05;
+    if(ball.lerp<1) ball.lerp += 0.35;
     ball.x = lerp(ball.prevX, ball.destX, ball.lerp);
     ball.y = lerp(ball.prevY, ball.destY, ball.lerp);
     ball.prevX = ball.x;
@@ -176,6 +227,7 @@ const redraw = (time) => {
     ctx.strokeStyle = "#000";
     ctx.stroke();
     
+
     animationFrame = requestAnimationFrame(redraw);
 };
 

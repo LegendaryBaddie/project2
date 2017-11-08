@@ -1,5 +1,5 @@
 class Paddle {
-  constructor(hash, player,x,y) {
+  constructor(hash, player, x, y) {
     this.hash = hash;
     this.lastUpdate = new Date().getTime();
     this.x = x;

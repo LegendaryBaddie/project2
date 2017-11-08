@@ -1,9 +1,8 @@
 class Message {
-    constructor(type, data) {
-      this.type = type;
-      this.data = data;
-    }
+  constructor(type, data) {
+    this.type = type;
+    this.data = data;
   }
-  
-  module.exports = Message;
-  
+  }
+
+module.exports = Message;

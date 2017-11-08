@@ -1,0 +1,16 @@
+body{
+    width: 95%;
+    height: 95%;
+    background: rgb(24, 7, 7); /* For browsers that do not support gradients */
+    background: -webkit-radial-gradient(circle, black, white,black); /* Safari */
+    background: -o-radial-gradient(circle, black, white, black); /* Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(circle, black, white, black); /* Firefox 3.6 to 15 */
+    background: radial-gradient(circle, black, white, black); /* Standard syntax */
+}
+
+canvas{
+    margin: auto;
+    display: block;
+    border-radius: 50px;
+    padding:20px;
+}

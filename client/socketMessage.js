@@ -16,6 +16,8 @@ const startD = (data) =>{
     //draw ball
     ball = data.ball;
     //let people move
+    win = false;
+    newestDead = '';
     active = true;
     requestAnimationFrame(redraw);
 }
@@ -39,6 +41,24 @@ const updateB = (data) =>{
 
 const death = (data) => {
     paddles[data.player].alive = false;
+    let deadCount = 0;
+    for(let i = 0; i<paddles.length; i++ ){
+        if(paddles[i].alive ===false){
+            deadCount++;
+        }
+    }
+    if(deadCount>=5 && paddles[player].alive){
+      win = true;
+      socket.emit('killRoom');
+    }else{
+        if(paddles[data.player].hash === hash)
+        {
+            active = false;
+            newestDead = "You";
+        }else{
+            newestDead = `Player ${data.player + 1}`;
+        }
+    }
 }
 
 const updatePosition = () => {
@@ -120,6 +140,6 @@ const updatePosition = () => {
         break;
     }
 
-    paddle.alpha = 0.05;
+    paddle.lerp = 0.35;
     socket.emit('movementUpdate', paddle);
 };
